@@ -8,5 +8,17 @@
         <form action="/users/{{ user.id }}/delete" method="post">
             <button type="submit">Delete</button>
         </form>
+        <a href="/users/{{ user.id }}/posts/new"><button>Add Post</button></a>
+    </div>
+    <div id="user-post-container">
+        {% if posts %}
+        <ul>
+        {% for post in posts %}
+            <li><a href='/posts/{{ post.id }}'>{{ post.title }}</a></li>
+        {% endfor %}
+        </ul>
+        {% else %}
+        <p>No posts yet!</p>
+        {% endif %}
     </div>
 {% endblock %}

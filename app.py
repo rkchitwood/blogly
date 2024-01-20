@@ -1,6 +1,6 @@
 from flask import Flask, request, redirect, render_template
 from flask_debugtoolbar import DebugToolbarExtension
-from models import db, connect_db, User
+from models import db, connect_db, User, Post
 
 app=Flask(__name__)
 app.config['SECRET_KEY']='key'
@@ -48,7 +48,8 @@ def handle_new_user():
 def user_details(id):
     '''shows user detail page'''
     user = User.query.get(id)
-    return render_template('user_details.html', user = user)
+    user_posts = user.posts
+    return render_template('user_details.html', user = user, posts = user_posts)
 
 @app.route('/users/<int:id>/edit')
 def edit_user(id):
@@ -64,7 +65,7 @@ def handle_edit(id):
     user.image_url = request.form.get('img-url', None)
     if user.image_url == '':
         user.image_url = None
-    db.session.add(user)
+    # db.session.add(user)
     db.session.commit()
     return redirect('/users')
 
@@ -76,3 +77,53 @@ def handle_delete(id):
     db.session.commit()
 
     return redirect('/users')
+
+@app.route('/users/<int:id>/posts/new')
+def post_form(id):
+    '''shows new post form for a user'''
+    user = User.query.get(id)
+    return render_template('post_form.html', user = user)
+
+@app.route('/users/<int:id>/posts/new', methods=['POST'])
+def handle_post(id):
+    '''handles post form by adding post and redirecting to user detail page'''
+    user = User.query.get(id)
+    post = Post(title=request.form['title'], content=request.form['content'])
+    user.posts.append(post)
+    db.session.commit()
+    return redirect(f'/users/{id}')
+
+@app.route('/posts/<int:id>')
+def post_details(id):
+    '''shows a post'''
+    post = Post.query.get(id)
+    return render_template('post.html', post = post)
+
+@app.route('/posts/<int:id>/edit')
+def show_edit_post_form(id):
+    '''shows the form to edit a post'''
+    post = Post.query.get(id)
+    username = post.user
+    return render_template('post_edit_form.html', post = post, user=username)
+
+@app.route('/posts/<int:id>/edit', methods=['POST'])
+def handle_post_edit(id):
+    '''updates a post based off of the edits to the post'''
+    #retrieve post from db
+    #update from form data
+    #send to db
+    post = Post.query.get(id)
+    post.title = request.form['title']
+    post.content = request.form['content']
+    # db.session.add(post)
+    db.session.commit()
+    return redirect(f'/posts/{id}')
+
+@app.route('/posts/<int:id>/delete', methods=['POST'])
+def delete_post(id):
+    '''deletes a post'''
+    post = Post.query.get(id)
+    db.session.delete(post)
+    db.session.commit()
+    return redirect('/users')
+       
