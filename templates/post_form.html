@@ -8,6 +8,12 @@
         <input type="text" name="title" required/>
         <label for="content">Post Content</label>
         <input type="text" name="content" required/>
+        {% if tags %}
+        {% for tag in tags %}
+        <input type="checkbox" value="{{ tag.id }}" id="{{ tag.id }}" name="tags"/>
+        <label for="{{ tag.id }}">{{ tag.name }}</label>
+        {% endfor %}
+        {% endif %}
 
         <input type="submit" value="Post"/>
     </form>

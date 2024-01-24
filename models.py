@@ -28,3 +28,16 @@ class Post(db.Model):
     content = db.Column(db.Text, nullable = False)
     created_at = db.Column(db.DateTime, nullable=False, server_default=db.func.current_timestamp())
     user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'))
+
+class Tag(db.Model):
+    '''creates a tag table'''
+    __tablename__='tags'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.Text, unique=True, nullable = False)
+    posts = db.relationship('Post', secondary='posts_tags', backref='tags')
+
+class PostTag(db.Model):
+    '''creates m:m join of post and tag table'''
+    __tablename__='posts_tags'
+    post_id = db.Column(db.Integer, db.ForeignKey('posts.id'), primary_key=True)
+    tag_id = db.Column(db.Integer, db.ForeignKey('tags.id'), primary_key=True)

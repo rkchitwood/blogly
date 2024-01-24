@@ -4,6 +4,10 @@
 <div id="postcontainer">
     <h1>{{ post.title }}</h1>
     <p>{{ post.content }}</p>
+    <p>By {{ user.first_name }} {{  user.last_name }} on {{ post.created_at }}</p>
+    {% if tags %}
+    <p>Tags:{% for tag in tags %}<a href="/tags/{{ tag.id }}">{{ tag.name }}</a>{% endfor %}</p>
+    {% endif %}
     <a href='/users'><button>Cancel</button></a>
     <a href='/posts/{{ post.id }}/edit'><button>Edit</button></a>
     <form action="/posts/{{ post.id }}/delete" method="post">
